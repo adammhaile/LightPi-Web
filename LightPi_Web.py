@@ -5,6 +5,7 @@ sys.path.append("/home/pi/RPi-LPD8806")
 
 from LPD8806 import *
 from animation import *
+from light_thread import *
 
 # Check that the system is set up like we want it
 dev = '/dev/spidev0.0'
@@ -42,18 +43,37 @@ led.setChannelOrder(ChannelOrder.BRG) #Only use this if your strip does not use 
 #led.setMasterBrightness(0.5) #use this to set the overall max brightness of the strip
 led.all_off()
 
+curThread = None
+def endThread():
+    global curThread
+    if curThread:
+        curThread.stop()
+        curThread.join()
+        curThread = None
+
 @route('/')
 def index():
-    return "This is the index"
+    return template('index')
+
+@route('/api/pattern/<index:int>')
+def pattern(index):
+    endThread()
+    global curThread
+    if index == 0:
+        anim = ColorPattern(led, [Color(255,0,0),Color(0,255,0)],2)
+        curThread = anim_thread(led, anim)
+        curThread.start()
 
 @route('/api/on')
 def on():
+    endThread()
     led.fill(SysColors.red)
     led.update()
     return "LEDs on!"
 
 @route('/api/off')
 def off():
+    endThread()
     led.all_off()
     return "LEDs off!"
 
