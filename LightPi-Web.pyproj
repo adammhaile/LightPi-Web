@@ -23,6 +23,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="LightPi_Web.py" />
+    <Compile Include="light_thread.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\button.css" />
+    <Content Include="index.tpl" />
+    <Content Include="js\jquery-2.0.3.min.js" />
+    <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="js\" />
+    <Folder Include="css\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

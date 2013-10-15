@@ -45,6 +45,11 @@ led.setChannelOrder(ChannelOrder.BRG) #Only use this if your strip does not use 
 led.all_off()
 
 curThread = None
+lastReq = None
+def logReq(req):
+    global lastReq
+    lastReq = req.fullpath
+
 def endThread():
     global curThread
     if curThread:
@@ -66,6 +71,7 @@ def index():
 
 @route('/api/pattern/<width:int>/<step:int>/<delay:int>/<colors:re:([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6})(-([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}))*>')
 def pattern(width, step, delay, colors):
+    logReq(request)
     endThread()
     global curThread
     color_split = colors.split("-")
@@ -80,19 +86,29 @@ def pattern(width, step, delay, colors):
 
 @route('/api/fill/<color:re:([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6})>')
 def fill(color):
+    logReq(request)
     endThread()
     led.fill(color_hex(color))
     led.update()
+
+@route('/api/brightness/<value:int>')
+def brightness(value):
+    #endThread()
+    led.setMasterBrightness(value / 100.0)
+
+@route('/api/brightness/get')
+def brightness():
+    return str(int(led.masterBrightness * 100))
 
 @route('/api/off')
 def off():
     endThread()
     led.all_off()
-    return "LEDs off!"
 
-@route('/api/<action>/<value>')
-def main_api(action, value):
-    return template('You chose action: {{action}} with value: {{value}}', action=action, value=value)
+@route('/api/last')
+def runLastReq():
+    if lastReq and curThread is None:
+        default_app().handle(lastReq)
 
 def sigint_handler(signal, frame):
     print "Shutting down gracefully..."
@@ -102,4 +118,4 @@ def sigint_handler(signal, frame):
 
 signal.signal(signal.SIGINT, sigint_handler)
 
-run(host='0.0.0.0', port=80)
+run(host='0.0.0.0', port=80, reloader=True)
