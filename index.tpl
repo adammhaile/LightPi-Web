@@ -110,7 +110,7 @@
     <select id="fill_colors">
         <option value="">Select a Color</option>
         <option value="FF0000">Red</option>
-        <option value="FF7F00">Orange</option>
+        <option value="FF5C00">Orange</option>
         <option value="FFFF00">Yellow</option>
         <option value="00FF00">Green</option>
         <option value="0000FF">Blue</option>
@@ -121,8 +121,8 @@
     <br />
     <select id="patterns">
         <option value="">Select a Pattern</option>
-        <option value="/3/1/0/FF7F00-000000">Halloween 1</option>
-        <option value="/3/1/0/FF7F00-4B0082">Halloween 2</option>
+        <option value="/3/1/0/FF5C00-000000">Halloween 1</option>
+        <option value="/3/1/0/FF5C00-4B0082">Halloween 2</option>
         <option value="/3/1/0/FF0000-00FF00">Christmas</option>
         <option value="/3/1/0/FF0000-FFFFFF-0000FF">4th of July</option>
         <option value="/3/1/0/FFFFFF-0000FF">Hanukkah</option>
