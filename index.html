@@ -1,0 +1,194 @@
+<html>
+<head>
+    <title>LightPi Web</title>
+    <meta name="viewport" content ="width=device-width,initial-scale=1,user-scalable=yes" />
+    <LINK href="/css/button.css" rel="stylesheet" type="text/css">
+    <LINK href="/css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/farbtastic/farbtastic.css" type="text/css" />
+    <style>
+        body {
+            max-width: 720px;
+        }
+
+        .button {
+            width: 50%;
+        }
+
+        .porch {
+            width: 22%;
+        }
+
+        #color {
+            width: 75px;
+        }
+    </style>
+    
+    <script src="/js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/farbtastic/farbtastic.js"></script>
+    <!--<script src="/js/jquery-ui-1.10.3.custom.min.js"></script>-->
+
+    <script src="/js/animations.js"></script>
+
+    <script type="text/javascript">
+        function apiSuccess(data) {
+            console.log("Call success! - " + data);
+        }
+        function apiFail(data) {
+            console.log("Call failed! - " - data);
+        }
+        function allOff() {
+            $.get("/api/off", apiSuccess)
+            .fail(apiFail);
+        }
+        function apiFill(color) {
+            if (color != "") {
+                $.get("/api/fill/" + color, apiSuccess)
+                .fail(apiFail);
+            }
+        }
+        function apiLast() {
+            $.get("/api/last", apiSuccess)
+            .fail(apiFail);
+        }
+
+        function apiBrightness(value) {
+            $.get("/api/brightness/" + value, apiSuccess)
+            .fail(apiFail);
+        }
+
+        function getBrightnessCallback(value) {
+            setBrightnessLabel(value);
+            $("#brightness_slider").slider("value", parseInt(value));
+        }
+
+        function apiGetBrightness() {
+            $.get("/api/brightness/get", getBrightnessCallback)
+            .fail(apiFail);
+        }
+
+        function setBrightnessLabel(value) {
+            $('#brightness_label').html(value + "%");
+        }
+
+        //Where the magic happens
+        function _sendJSON(obj) {
+            json_str = JSON.stringify(obj);
+
+            $.ajax({
+                url: "/api/json",
+                type: "POST",
+                contentType: "application/json",
+                data: json_str,
+                success: apiSuccess,
+            })
+            .fail(apiFail);
+        }
+
+        function sendJSON(display, params) {
+            var json = { display: display, params: params };
+            _sendJSON(json);
+        }
+        
+        function api_fill_color(fill) {
+            if (fill != "") {
+                sendJSON('fill_color', { color: fill });
+            }
+        }
+
+        function fill_color_change() {
+            fill_name = $('#fill_colors').val();
+
+            api_fill_color(_colors[fill_name]);
+        }
+
+        function quickselect_change() {
+            color = $('#quickselect').val();
+            $.farbtastic('#colorpicker').setColor("#" + _colors[color]);
+        }
+
+        function patternChange() {
+            id = $('#patterns').val();
+            if (id != "") {
+                sendJSON("pattern", _led_patterns[id]);
+            }
+        }
+
+        function api_larson() {
+            sendJSON('larson', { color: getFarbColor(), tail: 36, delay: 0 });
+        }
+
+        function api_larson_rainbow() {
+            sendJSON('larson_rainbow', { tail: 36, delay: 0 });
+        }
+
+        function getFarbColor() {
+            return $.farbtastic('#colorpicker').color;
+        }
+        $(document).ready(function () {
+            $('#colorpicker').farbtastic('#color');
+
+            var fill_colors = $('#fill_colors');
+            var quick_select = $('#quickselect');
+            $.each(_colors, function (name, color) {
+                fill_colors.append(
+                    $('<option></option>').val(name).html(name)
+                );
+                quick_select.append(
+                    $('<option></option>').val(name).html(name)
+                );
+            });
+
+            var patternSelect = $('#patterns');
+            $.each(_led_patterns, function (name, params) {
+                patternSelect.append(
+                    $('<option></option>').val(name).html(name)
+                );
+            });
+            $('#patterns').change(patternChange);
+            $('#fill_colors').change(fill_color_change);
+            $('#quickselect').change(quickselect_change);
+            $('#allOff').click(function () {
+                sendJSON('off', null);
+            });
+            $('#larson').click(api_larson);
+            $('#larson_rainbow').click(api_larson_rainbow);
+
+        });
+    </script>
+</head>
+<body>
+    <a class="button" id="allOff" href="#" style="width:100%">All Off</a>
+    <br />
+    <br />
+    
+    <a class="button porch" id="p100" href="#" onclick="api_fill_color('ffffffe6');">100%</a>
+    <a class="button porch" id="p75" href="#" onclick="api_fill_color('ffffffC0');">75%</a>
+    <a class="button porch" id="p50" href="#" onclick="api_fill_color('ffffff80');">50%</a>
+    <a class="button porch" id="p25" href="#" onclick="api_fill_color('ffffff40');">25%</a>
+    <br />
+    <br />
+    <div id="colorpicker"></div>
+    <br />
+    <form>
+        <input type="text" id="color" name="color" value="#FF0000" />
+        <select id="quickselect">
+            <option value="">Quick Select</option>
+        </select>
+    </form>
+    <br />
+    <a class="button" id="larson" href="#">Larson Scanner</a>
+    <br />
+    <br />
+    <a class="button" id="larson_rainbow" href="#">Larson Rainbow</a>
+    <br />
+    <br />
+    <select id="fill_colors">
+        <option value="">Select a Color</option>
+    </select>
+    <br />
+    <br />
+    <select id="patterns">
+        <option value="">Select a Pattern</option>
+    </select>
+</body>
+</html>

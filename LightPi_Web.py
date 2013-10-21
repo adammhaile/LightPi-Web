@@ -3,9 +3,7 @@ import sys
 
 sys.path.append("/home/pi/RPi-LPD8806")
 
-from LPD8806 import *
-from animation import *
-from light_thread import *
+from displays import *
 import signal
 
 # Check that the system is set up like we want it
@@ -52,10 +50,12 @@ def logReq(req):
 
 def endThread():
     global curThread
+    global led
     if curThread:
         curThread.stop()
         curThread.join()
         curThread = None
+        led.fill(SysColors.off)
 
 @route('/js/<filename:path>')
 def send_js(filename):
@@ -65,50 +65,36 @@ def send_js(filename):
 def send_css(filename):
     return static_file(filename, root='css')
 
+@route('/<filename:path>')
+def send_css(filename):
+    return static_file(filename, root='')
+
+@post('/api/json')
+def json():
+    global curThread
+    json_data = request.json
+    print json_data
+    if 'display' in json_data:
+        if json_data['display'] in display_options and 'params' in json_data:
+            endThread()
+            curThread = display_options[json_data['display']](led, json_data['params'])
+            if curThread:
+                curThread.start()
+            return "OK"
+        else:
+            return "FAIL"
+    else:
+        return "FAIL"
+
 @route('/')
 def index():
-    return template('index')
-
-@route('/api/pattern/<width:int>/<step:int>/<delay:int>/<colors:re:([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6})(-([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}))*>')
-def pattern(width, step, delay, colors):
-    logReq(request)
-    endThread()
-    global curThread
-    color_split = colors.split("-")
-    color_list = [color_hex(c) for c in color_split]
-    anim = ColorPattern(led, color_list, width, step)
-    if delay == 0:
-        delay = None
-    else:
-        delay = delay / 1000.0
-    curThread = anim_thread(led, anim, delay)
-    curThread.start()
-
-@route('/api/fill/<color:re:([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6})>')
-def fill(color):
-    logReq(request)
-    endThread()
-    led.fill(color_hex(color))
-    led.update()
-
-@route('/api/brightness/<value:int>')
-def brightness(value):
-    #endThread()
-    led.setMasterBrightness(value / 100.0)
-
-@route('/api/brightness/get')
-def brightness():
-    return str(int(led.masterBrightness * 100))
+    #return template('index')
+    return static_file("index.html", root='')
 
 @route('/api/off')
 def off():
     endThread()
     led.all_off()
-
-@route('/api/last')
-def runLastReq():
-    if lastReq and curThread is None:
-        default_app().handle(lastReq)
 
 def sigint_handler(signal, frame):
     print "Shutting down gracefully..."
