@@ -37,10 +37,39 @@ def larson_rainbow(led, params):
         return anim_thread(led, anim, get_delay(params['delay']))
     return None
 
+def rainbow(led, params):
+    if 'delay' in params:
+        anim = Rainbow(led)
+        return anim_thread(led, anim, get_delay(params['delay']))
+    return None
+
+def rainbow_cycle(led, params):
+    if 'delay' in params:
+        anim = RainbowCycle(led)
+        return anim_thread(led, anim, get_delay(params['delay']))
+    return None
+
+def color_wipe(led, params):
+    if 'delay' in params and 'color' in params:
+        anim = ColorWipe(led, color_hex(params['color']))
+        return anim_thread(led, anim, get_delay(params['delay']))
+    return None
+
+def color_chase(led, params):
+    if 'delay' in params and 'color' in params:
+        anim = ColorChase(led, color_hex(params['color']))
+        return anim_thread(led, anim, get_delay(params['delay']))
+    return None
+
+
 display_options = {
     'off' : all_off,
     'fill_color' : fill_color,
     'pattern' : pattern,
     'larson' : larson,
-    'larson_rainbow' : larson_rainbow
+    'larson_rainbow' : larson_rainbow,
+    'rainbow' : rainbow,
+    'rainbow_cycle' : rainbow_cycle,
+    'color_wipe' : color_wipe,
+    'color_chase' : color_chase,
 }

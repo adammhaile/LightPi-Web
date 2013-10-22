@@ -1,21 +1,21 @@
 <html>
 <head>
     <title>LightPi Web</title>
-    <meta name="viewport" content ="width=device-width,initial-scale=1,user-scalable=yes" />
+    <meta name="viewport" content ="width=device-width,initial-scale=2,user-scalable=yes" />
     <LINK href="/css/button.css" rel="stylesheet" type="text/css">
     <LINK href="/css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/farbtastic/farbtastic.css" type="text/css" />
     <style>
         body {
-            max-width: 720px;
+            max-width: 200px;
         }
 
         .button {
-            width: 50%;
+            width: 100%;
         }
 
         .porch {
-            width: 22%;
+            width: 48%;
         }
 
         #color {
@@ -35,39 +35,6 @@
         }
         function apiFail(data) {
             console.log("Call failed! - " - data);
-        }
-        function allOff() {
-            $.get("/api/off", apiSuccess)
-            .fail(apiFail);
-        }
-        function apiFill(color) {
-            if (color != "") {
-                $.get("/api/fill/" + color, apiSuccess)
-                .fail(apiFail);
-            }
-        }
-        function apiLast() {
-            $.get("/api/last", apiSuccess)
-            .fail(apiFail);
-        }
-
-        function apiBrightness(value) {
-            $.get("/api/brightness/" + value, apiSuccess)
-            .fail(apiFail);
-        }
-
-        function getBrightnessCallback(value) {
-            setBrightnessLabel(value);
-            $("#brightness_slider").slider("value", parseInt(value));
-        }
-
-        function apiGetBrightness() {
-            $.get("/api/brightness/get", getBrightnessCallback)
-            .fail(apiFail);
-        }
-
-        function setBrightnessLabel(value) {
-            $('#brightness_label').html(value + "%");
         }
 
         //Where the magic happens
@@ -113,6 +80,19 @@
             }
         }
 
+        function misc_animChange() {
+            id = $('#misc_anim').val();
+            if (id != "") {
+                var anim = _misc_anim[id];
+                
+                if ("getColor" in anim && "color" in anim.params) {
+                    anim.params.color = getFarbColor();
+                }
+                        
+                _sendJSON(anim);
+            }
+        }
+
         function api_larson() {
             sendJSON('larson', { color: getFarbColor(), tail: 36, delay: 0 });
         }
@@ -124,26 +104,26 @@
         function getFarbColor() {
             return $.farbtastic('#colorpicker').color;
         }
+
+        function loadDropDown(id, dict) {
+            var dd = $(id);
+            $.each(dict, function (name, p) {
+                dd.append(
+                    $('<option></option>').val(name).html(name)
+                );
+            });
+        }
+
         $(document).ready(function () {
             $('#colorpicker').farbtastic('#color');
 
-            var fill_colors = $('#fill_colors');
-            var quick_select = $('#quickselect');
-            $.each(_colors, function (name, color) {
-                fill_colors.append(
-                    $('<option></option>').val(name).html(name)
-                );
-                quick_select.append(
-                    $('<option></option>').val(name).html(name)
-                );
-            });
+            loadDropDown('#fill_colors', _colors);
+            loadDropDown('#quickselect', _colors);
+            loadDropDown('#patterns', _led_patterns);
+            loadDropDown('#misc_anim', _misc_anim);
 
-            var patternSelect = $('#patterns');
-            $.each(_led_patterns, function (name, params) {
-                patternSelect.append(
-                    $('<option></option>').val(name).html(name)
-                );
-            });
+            $('#misc_anim').change(misc_animChange);
+
             $('#patterns').change(patternChange);
             $('#fill_colors').change(fill_color_change);
             $('#quickselect').change(quickselect_change);
@@ -163,6 +143,8 @@
     
     <a class="button porch" id="p100" href="#" onclick="api_fill_color('ffffffe6');">100%</a>
     <a class="button porch" id="p75" href="#" onclick="api_fill_color('ffffffC0');">75%</a>
+    <br />
+    <br />
     <a class="button porch" id="p50" href="#" onclick="api_fill_color('ffffff80');">50%</a>
     <a class="button porch" id="p25" href="#" onclick="api_fill_color('ffffff40');">25%</a>
     <br />
@@ -180,6 +162,11 @@
     <br />
     <br />
     <a class="button" id="larson_rainbow" href="#">Larson Rainbow</a>
+    <br />
+    <br />
+    <select id="misc_anim">
+        <option value="">Select an Animation</option>
+    </select>
     <br />
     <br />
     <select id="fill_colors">
