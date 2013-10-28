@@ -2,32 +2,59 @@
 <head>
     <title>LightPi Web</title>
     <meta name="viewport" content ="width=device-width,initial-scale=2,user-scalable=yes" />
-    <LINK href="/css/button.css" rel="stylesheet" type="text/css">
-    <LINK href="/css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/farbtastic/farbtastic.css" type="text/css" />
+    <LINK href="css/button.css" rel="stylesheet" type="text/css">
+    <LINK href="css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="farbtastic/farbtastic.css" type="text/css" />
     <style>
         body {
-            max-width: 200px;
+            max-width: 360px;
+            margin: 5px;
+            margin-bottom: 15px;
         }
 
         .button {
             width: 100%;
+            margin: 2px;
         }
 
-        .porch {
-            width: 48%;
+        .porch_buttons {
+            width: 100%;
+            display: table;
+        }
+
+        .porch_buttons > div {
+            display: table-cell;
+        }
+
+        .porch_buttons > .button {
+            
+           display: table-column;
+        }
+
+        #colorpicker {
+            align-items: center;
         }
 
         #color {
-            width: 75px;
+            width: 20%;
+            float: left;
+        }
+
+        #quickselect {
+            width: 78%;
+            float: right;
+        }
+
+        select {
+            width: 100%;
         }
     </style>
     
-    <script src="/js/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="/farbtastic/farbtastic.js"></script>
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="farbtastic/farbtastic.js"></script>
     <!--<script src="/js/jquery-ui-1.10.3.custom.min.js"></script>-->
 
-    <script src="/js/animations.js"></script>
+    <script src="js/animations.js"></script>
 
     <script type="text/javascript">
         function apiSuccess(data) {
@@ -139,15 +166,16 @@
 <body>
     <a class="button" id="allOff" href="#" style="width:100%">All Off</a>
     <br />
-    <br />
-    
-    <a class="button porch" id="p100" href="#" onclick="api_fill_color('ffffffe6');">100%</a>
-    <a class="button porch" id="p75" href="#" onclick="api_fill_color('ffffffC0');">75%</a>
-    <br />
-    <br />
-    <a class="button porch" id="p50" href="#" onclick="api_fill_color('ffffff80');">50%</a>
-    <a class="button porch" id="p25" href="#" onclick="api_fill_color('ffffff40');">25%</a>
-    <br />
+    <div class="porch_buttons">
+        <div>
+            <a class="button" id="p100" href="#" onclick="api_fill_color('ffffffe6');">100%</a>
+            <a class="button" id="p75" href="#" onclick="api_fill_color('ffffffC0');">75%</a>
+        </div>
+        <div>
+            <a class="button" id="p50" href="#" onclick="api_fill_color('ffffff80');">50%</a>
+            <a class="button" id="p25" href="#" onclick="api_fill_color('ffffff40');">25%</a>
+        </div>
+    </div>
     <br />
     <div id="colorpicker"></div>
     <br />

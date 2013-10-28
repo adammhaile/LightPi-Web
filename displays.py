@@ -2,6 +2,15 @@ from LPD8806 import *
 from animation import *
 from light_thread import *
 
+class off_thread(BaseAnimation):
+    """Keep the lights off."""
+
+    def __init__(self, led, start=0, end=0):
+        super(off_thread, self).__init__(led, start, end)
+
+    def step(self):
+        self._led.all_off()
+
 def get_delay(delay):
     if delay == 0:
         return None
@@ -11,6 +20,10 @@ def get_delay(delay):
 def all_off(led, params):
     led.all_off()
     return None
+
+def all_off_thread(led, params):
+    anim = off_thread(led)
+    return anim_thread(led, anim, 60 * 5 * 1000)
 
 def fill_color(led, params):
     if 'color' in params:
@@ -63,7 +76,8 @@ def color_chase(led, params):
 
 
 display_options = {
-    'off' : all_off,
+    'off_' : all_off,
+    'off' : all_off_thread,
     'fill_color' : fill_color,
     'pattern' : pattern,
     'larson' : larson,

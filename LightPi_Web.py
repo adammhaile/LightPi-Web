@@ -44,6 +44,7 @@ led.all_off()
 
 curThread = None
 lastReq = None
+
 def logReq(req):
     global lastReq
     lastReq = req.fullpath
@@ -51,11 +52,11 @@ def logReq(req):
 def endThread():
     global curThread
     global led
+    led.fill(SysColors.off)
     if curThread:
         curThread.stop()
         curThread.join()
         curThread = None
-        led.fill(SysColors.off)
 
 @route('/js/<filename:path>')
 def send_js(filename):
@@ -69,14 +70,21 @@ def send_css(filename):
 def send_css(filename):
     return static_file(filename, root='')
 
-@post('/api/json')
-def json():
+import traceback
+def __doOffThread():
     global curThread
-    json_data = request.json
+    endThread()
+    curThread = display_options["off"](led, None)
+    if curThread:
+        curThread.start()
+
+def __handleJSON(json_data):
+    global curThread
     print json_data
     if 'display' in json_data:
         if json_data['display'] in display_options and 'params' in json_data:
             endThread()
+            print "Staring display: %s" % json_data['display']
             curThread = display_options[json_data['display']](led, json_data['params'])
             if curThread:
                 curThread.start()
@@ -85,6 +93,10 @@ def json():
             return "FAIL"
     else:
         return "FAIL"
+
+@post('/api/json')
+def json():
+    return __handleJSON(request.json)
 
 @route('/')
 def index():
@@ -102,6 +114,8 @@ def sigint_handler(signal, frame):
     led.all_off()
     sys.exit(0)
 
+__doOffThread()
+
 signal.signal(signal.SIGINT, sigint_handler)
 
-run(host='0.0.0.0', port=80, reloader=True)
+run(host='0.0.0.0', port=80)
