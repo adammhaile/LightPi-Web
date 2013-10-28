@@ -78,14 +78,28 @@ def __doOffThread():
     if curThread:
         curThread.start()
 
+def doParamsHandling(params):
+    global led
+    if params:
+        if 'width' in params:
+            w = params['width']
+            if type(w) is str or type(w) is unicode:
+                if w.endswith("%"):
+                    wi = int(w.rstrip('%'))
+                    params['width'] = int(led.leds * (wi / 100.0))
+                elif w.endswith("px"):
+                    wi = int(w.rstrip("px"))
+                    params['width'] = wi
+    return params
+
 def __handleJSON(json_data):
     global curThread
     print json_data
     if 'display' in json_data:
         if json_data['display'] in display_options and 'params' in json_data:
             endThread()
-            print "Staring display: %s" % json_data['display']
-            curThread = display_options[json_data['display']](led, json_data['params'])
+            params = doParamsHandling(json_data['params'])
+            curThread = display_options[json_data['display']](led, params)
             if curThread:
                 curThread.start()
             return "OK"
