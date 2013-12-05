@@ -89,10 +89,8 @@
             }
         }
 
-        function fill_color_change() {
-            fill_name = $('#fill_colors').val();
-
-            api_fill_color(_colors[fill_name]);
+        function fillColor() {
+            api_fill_color(getFarbColor());
         }
 
         function quickselect_change() {
@@ -100,32 +98,13 @@
             $.farbtastic('#colorpicker').setColor("#" + _colors[color]);
         }
 
-        function patternChange() {
-            id = $('#patterns').val();
+        function runBatch() {
+            id = $('#batch_anim').val();
             if (id != "") {
-                sendJSON("pattern", _led_patterns[id]);
-            }
-        }
+                var anim = _batch_anim[id];
 
-        function misc_animChange() {
-            id = $('#misc_anim').val();
-            if (id != "") {
-                var anim = _misc_anim[id];
-                
-                if ("getColor" in anim && "color" in anim.params) {
-                    anim.params.color = getFarbColor();
-                }
-                        
                 _sendJSON(anim);
             }
-        }
-
-        function api_larson() {
-            sendJSON('larson', { color: getFarbColor(), tail: 36, delay: 0 });
-        }
-
-        function api_larson_rainbow() {
-            sendJSON('larson_rainbow', { tail: 36, delay: 0 });
         }
 
         function getFarbColor() {
@@ -144,21 +123,16 @@
         $(document).ready(function () {
             $('#colorpicker').farbtastic('#color');
 
-            loadDropDown('#fill_colors', _colors);
             loadDropDown('#quickselect', _colors);
-            loadDropDown('#patterns', _led_patterns);
-            loadDropDown('#misc_anim', _misc_anim);
+            loadDropDown('#batch_anim', _batch_anim);
 
-            $('#misc_anim').change(misc_animChange);
-
-            $('#patterns').change(patternChange);
-            $('#fill_colors').change(fill_color_change);
             $('#quickselect').change(quickselect_change);
             $('#allOff').click(function () {
                 sendJSON('off', null);
             });
-            $('#larson').click(api_larson);
-            $('#larson_rainbow').click(api_larson_rainbow);
+
+            $('#runBatch').click(runBatch);
+            $('#btnFillColor').click(fillColor);
 
         });
     </script>
@@ -176,6 +150,12 @@
             <a class="button" id="p25" href="#" onclick="api_fill_color('ffffff40');">25%</a>
         </div>
     </div>
+    <select id="batch_anim">
+        <option value="">Select an Animation</option>
+    </select>
+    <br />
+    <a class="button" id="runBatch" href="#">Run Animation</a>
+    <br />
     <br />
     <div id="colorpicker"></div>
     <br />
@@ -186,12 +166,17 @@
         </select>
     </form>
     <br />
+    <br />
+    <a class="button" id="btnFillColor" href="#">Fill Color</a>
+    <!--
+    <br />
     <a class="button" id="larson" href="#">Larson Scanner</a>
     <br />
     <br />
     <a class="button" id="larson_rainbow" href="#">Larson Rainbow</a>
     <br />
     <br />
+    
     <select id="misc_anim">
         <option value="">Select an Animation</option>
     </select>
@@ -205,5 +190,11 @@
     <select id="patterns">
         <option value="">Select a Pattern</option>
     </select>
+    -->
+    
+    <br />
+    <br />
+    <br />
+    <br />
 </body>
 </html>

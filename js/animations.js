@@ -25,3 +25,14 @@ var _misc_anim =
         "Color Wipe*": { display: "color_wipe", getColor: true, params: { delay: 0, color: null } },
         "Color Chase*": { display: "color_chase", getColor: true, params: { delay: 0, color: null } },
     };
+
+var _christmas = 
+    [
+        { anim : "pattern", delay : 0, amt : "2.5%", max : 20, params : { colors : ["FF0000", "00FF00"], width : "25%", dir : true, start : 0, end : 0 } },
+        { anim: "pattern", delay: 500, amt: "25%", max: 10, params: { colors: ["FF0000", "00FF00"], width: "25%", dir: true, start: 0, end: 0 } },
+    ];
+
+var _batch_anim = 
+    {
+        "Christmas": { display: "batch", params: _christmas },
+    }
