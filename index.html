@@ -1,9 +1,9 @@
 <html>
 <head>
     <title>LightPi Web</title>
-    <meta name="viewport" content ="width=device-width,initial-scale=2,user-scalable=yes" />
+    <meta name="viewport" content ="width=device-width,initial-scale=1,user-scalable=yes" />
     <LINK href="css/button.css" rel="stylesheet" type="text/css">
-    <LINK href="css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
+    <!--<LINK href="css/ui-darkness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">-->
     <link rel="stylesheet" href="farbtastic/farbtastic.css" type="text/css" />
     <style>
         body {
@@ -60,8 +60,10 @@
         function apiSuccess(data) {
             console.log("Call success! - " + data);
         }
-        function apiFail(data) {
-            console.log("Call failed! - " - data);
+        function apiFail(xhr, textStatus, errorThrown) {
+            if (xhr.status == 501)
+                alert(xhr.responseText);
+            console.log(xhr.responseText);
         }
 
         //Where the magic happens
@@ -151,7 +153,7 @@
         </div>
     </div>
     <select id="batch_anim">
-        <option value="">Select an Animation</option>
+        <!--<option value="">Select an Animation</option>-->
     </select>
     <br />
     <a class="button" id="runBatch" href="#">Run Animation</a>

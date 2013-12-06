@@ -74,7 +74,7 @@ import traceback
 def __doOffThread():
     global curThread
     endThread()
-    curThread = display_options["off"](led, None)
+    curThread, error = display_options["off"](led, None)
     if curThread:
         curThread.start()
 
@@ -98,19 +98,23 @@ def __handleJSON(json_data):
     if 'display' in json_data:
         if json_data['display'] in display_options and 'params' in json_data:
             endThread()
-            params = doParamsHandling(json_data['params'])
-            curThread = display_options[json_data['display']](led, params)
+            params = json_data['params']
+            curThread, error = display_options[json_data['display']](led, params)
+            if len(error):
+                return (501, error)
             if curThread:
                 curThread.start()
-            return "OK"
+            return (200, "OK")
         else:
-            return "FAIL"
+            return (501, json_data['display'] + ' is not a valid display object!')
     else:
-        return "FAIL"
+        return (501, 'JSON requests require a display parameter')
 
 @post('/api/json')
 def json():
-    return __handleJSON(request.json)
+    status, msg = __handleJSON(request.json)
+    response.status = status
+    return msg
 
 @route('/')
 def index():
@@ -131,5 +135,8 @@ def sigint_handler(signal, frame):
 __doOffThread()
 
 signal.signal(signal.SIGINT, sigint_handler)
+
+if len(batch_options) == 0:
+    buildAnimClasses()
 
 run(host='0.0.0.0', port=80)

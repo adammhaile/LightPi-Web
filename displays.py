@@ -1,6 +1,7 @@
 from LPD8806 import *
 from animation import *
 from light_thread import *
+import inspect
 
 class off_thread(BaseAnimation):
     """Keep the lights off."""
@@ -19,60 +20,17 @@ def get_delay(delay):
 
 def all_off(led, params):
     led.all_off()
-    return None
+    return (None, '')
 
 def all_off_thread(led, params):
     anim = [{'anim' : off_thread(led), 'delay' : 60 * 5 * 1000, 'steps' : 0, 'amt' : 1}]
-    return anim_thread(led, anim)
+    return (anim_thread(led, anim), '')
 
 def fill_color(led, params):
     if 'color' in params:
         led.fill(color_hex(params['color']))
         led.update()
-    return None
-
-def pattern(led, params):
-    if 'width' in params and 'step' in params and 'colors' in params and 'delay' in params:
-        color_list = [color_hex(c) for c in params['colors']]
-        anim = ColorPattern(led, color_list, params['width'], params['step'])
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def larson(led, params):
-    if 'tail' in params and 'color' in params and 'delay' in params:
-        anim = LarsonScanner(led, color_hex(params['color']), params['tail'])
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def larson_rainbow(led, params):
-    if 'tail' in params and 'delay' in params:
-        anim = LarsonRainbow(led, params['tail'])
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def rainbow_cycle(led, params):
-    if 'delay' in params:
-        anim = RainbowCycle(led)
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def color_wipe(led, params):
-    if 'delay' in params and 'color' in params:
-        anim = ColorWipe(led, color_hex(params['color']))
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def color_chase(led, params):
-    if 'delay' in params and 'color' in params:
-        anim = ColorChase(led, color_hex(params['color']))
-        return anim_thread(led, anim, get_delay(params['delay']))
-    return None
-
-def rainbow(led, params):
-    if 'delay' in params:
-        anim = [{'anim' : Rainbow(led), 'delay' : 0, 'steps' : 0, 'amt' : 1}]
-        return anim_thread(led, anim)
-    return None
+    return (None, '')
 
 def handlePixPercent(led, val):
     result = 0;
@@ -95,37 +53,62 @@ def handleBatchParams(led, params):
             params['colors'] = [color_hex(c) for c in params['colors']]
     return params
 
-def getPattern(led, params):
-    params = handleBatchParams(led, params)
-    return ColorPattern(led, params['colors'], params['width'], params['dir'], params['start'], params['end'])
+#Class Utils
+def getRequiredArgs(theClass):
+    args, varargs, varkw, defaults = inspect.getargspec(theClass.__init__)
+    if defaults:
+        args = args[:-len(defaults)]
+    return args   # *args and **kwargs are not required, so ignore them.
 
-batch_options = {
-    "pattern" : getPattern,
-}
+def missingArgs(theClass, argdict):
+    return set(getRequiredArgs(theClass)).difference(argdict).difference(set(['self','led']))
+    
+def invalidArgs(theClass, argdict):
+    args, varargs, varkw, defaults = inspect.getargspec(theClass.__init__)
+    if varkw: return set()  # All accepted
+    return set(argdict) - set(args)
+#end Class Utils
+
+batch_options = {}
+
+def buildAnimClasses():
+    for c in BaseAnimation.__subclasses__():
+        batch_options[c.__name__] = c
 
 def genBatchDict(led, item):
     if item['anim'] in batch_options:
-        return {'anim' : batch_options[item['anim']](led, item['params']), 'delay' : item['delay'], 'steps' : item['max'], 'amt' : handlePixPercent(led, item['amt'])}
+        anim = batch_options[item['anim']]
+        params = handleBatchParams(led, item['params'])
+        missing = missingArgs(anim, params)
+        invalid = invalidArgs(anim, params)
+        error = ''
+        if len(missing) > 0:
+            error += (item['anim'] + ' is missing these required arguments: ' + ', '.join(missing) + '\n')
+        if len(invalid) > 0:
+            error += (item['anim'] + ' has some invalid arguments: ' + ', '.join(invalid) + '\n')
+        if len(error) > 0:
+            return (None, error)
+        return ({'anim' : batch_options[item['anim']](led, **params), 'delay' : item['delay'], 'steps' : item['max'], 'amt' : handlePixPercent(led, item['amt'])}, '')
     else:
-        return None
+        return (None, item['anim'] + ' is not a valid animation class!\n')
 
 def batch_anim(led, params):
     result = []
+    errors = ''
     for a in params:
-        result.append(genBatchDict(led, a))
-    return anim_thread(led, result)
+        dict, error = genBatchDict(led, a)
+        if dict:
+            result.append(dict)
+        else:
+            errors += error
+    if len(errors) > 0:
+        return (None, errors)
+    return (anim_thread(led, result), '')
 
 
 display_options = {
     'off_' : all_off,
     'off' : all_off_thread,
     'fill_color' : fill_color,
-    'pattern' : pattern,
-    'larson' : larson,
-    'larson_rainbow' : larson_rainbow,
-    'rainbow' : rainbow,
-    'rainbow_cycle' : rainbow_cycle,
-    'color_wipe' : color_wipe,
-    'color_chase' : color_chase,
     'batch' : batch_anim,
 }

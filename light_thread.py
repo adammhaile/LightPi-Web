@@ -20,9 +20,6 @@ class anim_thread(l_thread):
         self._timeRef = 0;
         self._curAnim = 0;
 
-        print "anim_thread"
-        print anims
-
     def __msTime(self):
         return time.time() * 1000.0
 
