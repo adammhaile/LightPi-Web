@@ -94,7 +94,7 @@ def __handleJSON(json_data):
                 return (501, error)
             if curThread:
                 curThread.start()
-            return (200, "OK")
+            return (200, '')
         else:
             return (501, json_data['display'] + ' is not a valid display object!')
     else:

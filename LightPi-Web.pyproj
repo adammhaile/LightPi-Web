@@ -25,8 +25,10 @@
     <Compile Include="displays.py" />
     <Compile Include="LightPi_Web.py" />
     <Compile Include="light_thread.py" />
+    <Compile Include="module1.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="connect.sh" />
     <Content Include="css\button.css" />
     <Content Include="farbtastic\farbtastic.css" />
     <Content Include="farbtastic\farbtastic.js" />
@@ -37,6 +39,7 @@
     <Content Include="js\animations.js" />
     <Content Include="js\jquery-2.0.3.min.js" />
     <Content Include="README.md" />
+    <Content Include="start.sh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="farbtastic\" />

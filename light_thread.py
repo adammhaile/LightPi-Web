@@ -48,7 +48,7 @@ class anim_thread(l_thread):
                     break;
 
             #if multiple anims, move to next one
-            if len(self._anims) > 1:
+            if max_steps > 0 and len(self._anims) > 1:
                 cur_step += 1
                 if cur_step >= max_steps:
                     cur_step = 0
@@ -61,4 +61,5 @@ class anim_thread(l_thread):
                     delay = current["delay"]
                     max_steps = current["steps"]
                     amount = current["amt"]
+                    anim._step = 0
                 

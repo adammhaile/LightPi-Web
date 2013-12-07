@@ -26,6 +26,11 @@ var _christmas =
         { anim: "ColorPattern", delay: 500, amt: "33%", max: 10, params: { colors: ["FF0000", "00FF00"], width: "33%", dir: true, start: 0, end: 0 } },
     ];
 
+var _clock = 
+    [
+        { anim: "RGBClock", delay: 500, amt: 1, max: 0, params: { hStart: 0, hEnd: 59, mStart: 60, mEnd: 119, sStart: 120, sEnd: 179 } },
+    ]
+
 var _demo =
     [
         { anim: "Rainbow", delay: 0, amt: "2.5%", max: 40, params: {} },
@@ -49,4 +54,5 @@ var _batch_anim =
     {
         "Demo Mode": _demo,
         "Christmas": _christmas,
+        "RGB Clock": _clock,
     }
