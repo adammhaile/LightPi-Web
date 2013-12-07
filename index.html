@@ -10,6 +10,7 @@
             max-width: 360px;
             margin: 5px;
             margin-bottom: 15px;
+            background-color: #222222;
         }
 
         .button {
@@ -105,7 +106,7 @@
             if (id != "") {
                 var anim = _batch_anim[id];
 
-                _sendJSON(anim);
+                _sendJSON({ display: "batch", params: anim });
             }
         }
 

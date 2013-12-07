@@ -33,7 +33,7 @@ def fill_color(led, params):
     return (None, '')
 
 def handlePixPercent(led, val):
-    result = 0;
+    result = val;
     if type(val) is str or type(val) is unicode:
         if val.endswith("%"):
             i = float(val.rstrip('%'))
@@ -41,8 +41,9 @@ def handlePixPercent(led, val):
         elif val.endswith("px"):
             i = int(val.rstrip("px"))
             result = i
-    else:
-        result = val
+        else:
+            result = int(val)
+
     return result
 
 def handleBatchParams(led, params):
@@ -51,6 +52,8 @@ def handleBatchParams(led, params):
             params['width'] = handlePixPercent(led, params['width'])
         if 'colors' in params:
             params['colors'] = [color_hex(c) for c in params['colors']]
+        if 'color' in params:
+            params['color'] = color_hex(params['color'])
     return params
 
 #Class Utils
@@ -72,6 +75,7 @@ def invalidArgs(theClass, argdict):
 batch_options = {}
 
 def buildAnimClasses():
+    batch_options["LarsonRainbow"] = LarsonRainbow #hack for the moment since it's a subclass of LarsonScanner
     for c in BaseAnimation.__subclasses__():
         batch_options[c.__name__] = c
 
@@ -79,6 +83,8 @@ def genBatchDict(led, item):
     if item['anim'] in batch_options:
         anim = batch_options[item['anim']]
         params = handleBatchParams(led, item['params'])
+        if item['delay'] == 0:
+            item['delay'] = None
         missing = missingArgs(anim, params)
         invalid = invalidArgs(anim, params)
         error = ''

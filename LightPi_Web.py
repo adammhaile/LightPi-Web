@@ -3,6 +3,10 @@ import sys
 
 sys.path.append("/home/pi/RPi-LPD8806")
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 from displays import *
 import signal
 
@@ -78,20 +82,6 @@ def __doOffThread():
     if curThread:
         curThread.start()
 
-def doParamsHandling(params):
-    global led
-    if params:
-        if 'width' in params:
-            w = params['width']
-            if type(w) is str or type(w) is unicode:
-                if w.endswith("%"):
-                    wi = int(w.rstrip('%'))
-                    params['width'] = int(led.leds * (wi / 100.0))
-                elif w.endswith("px"):
-                    wi = int(w.rstrip("px"))
-                    params['width'] = wi
-    return params
-
 def __handleJSON(json_data):
     global curThread
     print json_data
@@ -114,6 +104,8 @@ def __handleJSON(json_data):
 def json():
     status, msg = __handleJSON(request.json)
     response.status = status
+    if len(msg) > 0:
+        print msg
     return msg
 
 @route('/')
