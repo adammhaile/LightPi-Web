@@ -28,7 +28,15 @@ var _christmas =
 
 var _clock = 
     [
-        { anim: "RGBClock", delay: 500, amt: 1, max: 0, params: { hStart: 0, hEnd: 59, mStart: 60, mEnd: 119, sStart: 120, sEnd: 179 } },
+        { anim: "RGBClock", delay: 500, amt: 1, max: 0, params: { hStart: 0, hEnd: 119, mStart: 120, mEnd: 239, sStart: 240, sEnd: 359 } },
+    ]
+
+var _rainbow = 
+    [
+        { anim: "RainbowCycle", delay: 0, amt: "2.5%", max: 160, params: {} },
+        { anim: "ColorPattern", delay: 0, amt: "2.5%", max: 40, params: { colors: _rainbowColors, width: "10%", dir: true, start: 0, end: 0 } },
+        { anim: "ColorFade", delay: 0, amt: 1, max: 13*7, params: { colors: _rainbowColors } },
+        { anim: "FireFlies", delay: 0, amt: 1, max: 80, params: { colors: _rainbowColors, width: 2, count: 10 } },
     ]
 
 var _demo =
@@ -52,6 +60,7 @@ var _demo =
 
 var _batch_anim = 
     {
+        "Rainbow"  : _rainbow,
         "Demo Mode": _demo,
         "Christmas": _christmas,
         "RGB Clock": _clock,

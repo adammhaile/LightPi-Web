@@ -40,7 +40,10 @@ sudo chmod a+rw /dev/spidev0.0
 """)
 	sys.exit(2)
 
-num = (36*5*2);
+import config
+cfg = config.config()
+
+num = cfg.numLEDs;
 led = LEDStrip(num)
 led.setChannelOrder(ChannelOrder.BRG) #Only use this if your strip does not use the GRB order
 #led.setMasterBrightness(0.5) #use this to set the overall max brightness of the strip
@@ -131,4 +134,4 @@ signal.signal(signal.SIGINT, sigint_handler)
 if len(batch_options) == 0:
     buildAnimClasses()
 
-run(host='0.0.0.0', port=80)
+run(host=cfg.http_ip, port=cfg.http_port)
