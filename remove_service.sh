@@ -1,0 +1,1 @@
+sudo update-rc.d -f  lightpiweb.sh remove

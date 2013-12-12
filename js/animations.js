@@ -22,8 +22,10 @@ var _rainbowColors =
 
 var _christmas = 
     [
-        { anim : "ColorPattern", delay : 0, amt : "2.5%", max : 20, params : { colors : ["FF0000", "00FF00"], width : "33%", dir : true, start : 0, end : 0 } },
+        { anim: "ColorPattern", delay: 0, amt: "2.5%", max: 80, params: { colors: ["FF0000", "00FF00"], width: "33%", dir: true, start: 0, end: 0 } },
+        { anim: "ColorFade", delay: 0, amt: 1, max: 13 * 4, params: { colors: ["FF0000", "00FF00"] } },
         { anim: "ColorPattern", delay: 500, amt: "33%", max: 10, params: { colors: ["FF0000", "00FF00"], width: "33%", dir: true, start: 0, end: 0 } },
+        //{ anim: "FireFlies", delay: 500, amt: 1, max: 20, params: { colors: ["FF0000", "00FF00"], width: 3, count: 10 } },
     ];
 
 var _clock = 
@@ -34,15 +36,15 @@ var _clock =
 var _rainbow = 
     [
         { anim: "RainbowCycle", delay: 0, amt: "2.5%", max: 160, params: {} },
-        { anim: "ColorPattern", delay: 0, amt: "2.5%", max: 40, params: { colors: _rainbowColors, width: "10%", dir: true, start: 0, end: 0 } },
+        { anim: "ColorPattern", delay: 0, amt: "2.5%", max: 160, params: { colors: _rainbowColors, width: "10%", dir: true, start: 0, end: 0 } },
         { anim: "ColorFade", delay: 0, amt: 1, max: 13*7, params: { colors: _rainbowColors } },
         { anim: "FireFlies", delay: 0, amt: 1, max: 80, params: { colors: _rainbowColors, width: 2, count: 10 } },
     ]
 
 var _demo =
     [
-        { anim: "Rainbow", delay: 0, amt: "2.5%", max: 40, params: {} },
-        { anim: "RainbowCycle", delay: 0, amt: "2.5%", max: 40, params: {} },
+        //{ anim: "Rainbow", delay: 0, amt: "2.5%", max: 40, params: {} },
+        { anim: "RainbowCycle", delay: 0, amt: "2.5%", max: 84, params: {} },
         { anim: "ColorPattern", delay: 0, amt: "2.5%", max: 40, params: { colors: _rainbowColors, width: "10%", dir: true, start: 0, end: 0 } },
         { anim: "ColorWipe", delay: 0, amt: 2, max: 180, params: { color: "FF0000" } },
         { anim: "ColorWipe", delay: 0, amt: 2, max: 180, params: { color: "00FF00" } },

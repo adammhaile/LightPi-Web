@@ -1,5 +1,5 @@
-from LPD8806 import *
-from animation import *
+from raspledstrip.ledstrip import *
+from raspledstrip.animation import *
 from light_thread import *
 import inspect
 

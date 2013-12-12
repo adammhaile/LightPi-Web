@@ -18,7 +18,7 @@ case "$1" in
   start)
     echo "Starting LightPi Web"
     # run application you want to start
-    /home/pi/LightPi-Web/start.sh
+    LPW_PATH/start.sh
     ;;
   stop)
     echo "Stopping noip"
